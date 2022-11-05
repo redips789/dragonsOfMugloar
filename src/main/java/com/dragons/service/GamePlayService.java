@@ -2,12 +2,10 @@ package com.dragons.service;
 
 import com.dragons.client.DragonsOfMugloarApi;
 import com.dragons.model.GameState;
-import com.dragons.model.Item;
 import com.dragons.model.Message;
 import com.dragons.model.MessageWithCategory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,14 +27,16 @@ public class GamePlayService {
 
     public Integer play() {
         var startGameResponse = dragonsOfMugloarApi.startGame();
-        var gameState = new GameState(startGameResponse.gameId(), startGameResponse.gold(), startGameResponse.lives(), new ArrayList<>());
+        var gameState = new GameState(startGameResponse.gameId(), startGameResponse.gold(), startGameResponse.lives(),
+                dragonsOfMugloarApi.listItemsAvailableInShop(startGameResponse.gameId()));
         var currentScore = startGameResponse.score();
 
         while (gameState.getCurrentLives() > 0) {
             var messageWithCategory = getMessageWithCategory(gameState.getGameId());
-            gameState.getItems().addAll(dragonsOfMugloarApi.listItemsAvailableInShop(gameState.getGameId()));
             missionPreparatory.prepare(gameState, messageWithCategory, preparationStrategies);
+            messageWithCategory = getMessageWithCategory(gameState.getGameId()); //just in case old one expired during preparation
             var solveMessageResponse = dragonsOfMugloarApi.solveMessage(gameState.getGameId(), messageWithCategory.adId());
+
             gameState.setCurrentLives(solveMessageResponse.lives());
             gameState.setAvailableGold(solveMessageResponse.gold());
             currentScore = solveMessageResponse.score();
@@ -44,7 +44,6 @@ public class GamePlayService {
             if (gameState.getCurrentLives() == 0) {
                 break;
             }
-            gameState.getItems().clear();
         }
 
         return currentScore;
@@ -65,12 +64,5 @@ public class GamePlayService {
         return messagesWithGroup.stream()
                 .findFirst()
                 .orElseThrow();
-    }
-
-    private List<Item> getAffordableItems(String gameId, Integer availableGold) {
-        var items = dragonsOfMugloarApi.listItemsAvailableInShop(gameId);
-        return items.stream()
-                .filter(item -> item.cost() < availableGold)
-                .toList();
     }
 }

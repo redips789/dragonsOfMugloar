@@ -33,14 +33,6 @@ public class ApiException extends RuntimeException {
         return new ApiException(status.value(), TimeMachine.nowLocalDateAndTime(), reason, exceptions);
     }
 
-    public static ApiException badRequest(String reason, ApiExceptionDetails... exceptions) {
-        return new ApiException(HttpStatus.BAD_REQUEST, TimeMachine.nowLocalDateAndTime(), reason, List.of(exceptions));
-    }
-
-    public static ApiException notFound(String reason, ApiExceptionDetails... exceptions) {
-        return new ApiException(HttpStatus.NOT_FOUND, TimeMachine.nowLocalDateAndTime(), reason, List.of(exceptions));
-    }
-
     public static ApiException internalServerError(String reason, ApiExceptionDetails... exceptions) {
         return new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, TimeMachine.nowLocalDateAndTime(), reason, List.of(exceptions));
     }

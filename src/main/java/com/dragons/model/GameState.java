@@ -1,6 +1,9 @@
 package com.dragons.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GameState {
 
@@ -8,13 +11,14 @@ public class GameState {
     private Integer currentLives;
 
     private Integer availableGold;
-    private final List<Item> items;
+    private final List<Item> itemsAvailableToBuy = new ArrayList<>();
+    private final Set<Item> currentItems = new HashSet<>();
 
     public GameState(String gameId, Integer availableGold, Integer currentLives, List<Item> items) {
         this.gameId = gameId;
         this.availableGold = availableGold;
         this.currentLives = currentLives;
-        this.items = items;
+        this.itemsAvailableToBuy.addAll(items);
     }
 
     public String getGameId() {
@@ -25,8 +29,12 @@ public class GameState {
         return currentLives;
     }
 
-    public List<Item> getItems() {
-        return items;
+    public List<Item> getItemsAvailableToBuy() {
+        return itemsAvailableToBuy;
+    }
+
+    public Set<Item> getCurrentItems() {
+        return currentItems;
     }
 
     public Integer getAvailableGold() {

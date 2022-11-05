@@ -44,8 +44,8 @@ public class OpenApiConfiguration {
 
     private Tag apiTag() {
         return new Tag()
-                .name("new")
-                .description("new");
+                .name("Homework")
+                .description("For BigBank");
     }
 
     private License apiLicence() {
