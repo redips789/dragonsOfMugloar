@@ -8,13 +8,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class GamePlayService {
 
-    public static final String HEALTH_POT_ID = "hpot";
+
     private final DragonsOfMugloarApi dragonsOfMugloarApi;
     private final MissionPreparatory missionPreparatory;
     private final List<PreparationStrategy> preparationStrategies;
@@ -29,36 +28,29 @@ public class GamePlayService {
     public Integer play() {
         var gameState = dragonsOfMugloarApi.startGame();
         var gameId = gameState.gameId();
-        var currentScore = 0;
+        var currentScore = gameState.score();
+        var currentLives = gameState.lives();
+        var availableGold = gameState.gold();
+
         while (gameState.lives() > 0) {
-            var solutionResponse = dragonsOfMugloarApi.solveMessage(gameId, getMessageId(gameId));
+            var messageWithCategory = getMessageWithCategory(gameId);
+            var affordableItems = getAffordableItems(gameId, availableGold);
+            missionPreparatory.prepare(currentLives, messageWithCategory, gameId, preparationStrategies, affordableItems);
+            var solutionResponse = dragonsOfMugloarApi.solveMessage(gameId, messageWithCategory.adId());
             currentScore = solutionResponse.score();
+            currentLives = solutionResponse.lives();
+            availableGold = solutionResponse.gold();
 
             if (solutionResponse.lives() == 0) {
                 break;
             }
 
-            if (solutionResponse.lives() == 1) {
-                var items = dragonsOfMugloarApi.listItemsAvailableInShop(gameId);
-                var affordableItems = items.stream()
-                        .filter(item -> item.cost() < solutionResponse.gold())
-                        .toList();
-
-                var availableHpPot = getHealthPotId(affordableItems);
-
-                if (availableHpPot.isPresent()) {
-                    dragonsOfMugloarApi.purchaseShopItem(gameId, availableHpPot.orElseThrow());
-                } else if (affordableItems.size() > 0) {
-                    dragonsOfMugloarApi.purchaseShopItem(gameId, affordableItems.stream().findAny().orElseThrow().id());
-                }
-            }
         }
-        System.out.println("Final score: " + currentScore);
 
         return currentScore;
     }
 
-    private String getMessageId(String gameId) {
+    private MessageWithCategory getMessageWithCategory(String gameId) {
         var messages = dragonsOfMugloarApi.getMessages(gameId);
         var messagesWithGroup = messages.stream()
                 .map(Message::mapTo)
@@ -72,15 +64,13 @@ public class GamePlayService {
 
         return messagesWithGroup.stream()
                 .findFirst()
-                .orElseThrow()
-                .adId();
+                .orElseThrow();
     }
 
-    private Optional<String> getHealthPotId(List<Item> itemList) {
-        return itemList.stream()
-                .filter(item -> item.id().equals(HEALTH_POT_ID))
-                .sorted(Comparator.comparingInt(Item::cost))
-                .map(Item::id)
-                .findFirst();
+    private List<Item> getAffordableItems(String gameId, Integer availableGold) {
+        var items = dragonsOfMugloarApi.listItemsAvailableInShop(gameId);
+        return items.stream()
+                .filter(item -> item.cost() < availableGold)
+                .toList();
     }
 }
