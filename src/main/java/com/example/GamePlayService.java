@@ -2,64 +2,66 @@ package com.example;
 
 import com.example.client.DragonsOfMugloarApi;
 import com.example.rest.Message;
+import com.example.rest.MessageWithCategory;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class GamePlayService {
 
-    private List<String> easy = List.of("Walk in the park", "Sure thing", "Piece of cake", "Quite likely");
-
-    private Set<String> distinctProbability = new HashSet<>();
-
+    public static final String HEALTH_POT_ID = "hpot";
     private DragonsOfMugloarApi dragonsOfMugloarApi;
 
     public GamePlayService(DragonsOfMugloarApi dragonsOfMugloarApi) {
         this.dragonsOfMugloarApi = dragonsOfMugloarApi;
     }
 
-    public void play() {
+    public Integer play() {
         var gameState = dragonsOfMugloarApi.startGame();
-        var currentScore = gameState.score();
+        var gameId = gameState.gameId();
+        var currentScore = 0;
         while (gameState.lives() > 0) {
-            var messages = dragonsOfMugloarApi.getMessages(gameState.gameId());
-            distinctProbability.addAll(messages.stream().map(Message::probability).collect(Collectors.toList()));
-            var easyMessage = messages.stream().filter(t -> easy.contains(t.probability())).collect(Collectors.toList());
-            Comparator<Message> messageComparator = Comparator.comparing(Message::reward).reversed();
-            easyMessage.sort(messageComparator);
-            if (easyMessage.size() > 0) {
-                var solutionResponse = dragonsOfMugloarApi.solveMessage(gameState.gameId(), easyMessage.stream().findFirst().orElseThrow().adId());
-                currentScore = solutionResponse.score();
-                System.out.println(solutionResponse);
+            var solutionResponse = dragonsOfMugloarApi.solveMessage(gameId, getMessage(gameId));
+            currentScore = solutionResponse.score();
 
-                if (solutionResponse.lives() == 0) {
-                    System.out.println(distinctProbability);
-                    break;
-                }
-
-                if (solutionResponse.lives() == 1) {
-                    var items = dragonsOfMugloarApi.listItemsAvailableInShop(gameState.gameId());
-                    var affordableItems = items.stream().filter(t -> t.cost() < solutionResponse.gold()).toList();
-                    var availableHpPotions = items.stream().filter(t -> t.id().equals("hpot") && t.cost() < solutionResponse.gold()).toList();
-                    if (availableHpPotions.size() > 0) {
-                        dragonsOfMugloarApi.purchaseShopItem(gameState.gameId(), availableHpPotions.stream().findAny().orElseThrow().id());
-                    } else if (affordableItems.size() > 0) {
-                        dragonsOfMugloarApi.purchaseShopItem(gameState.gameId(), affordableItems.stream().findAny().orElseThrow().id());
-                    }
-                }
-
-            } else {
-                System.out.println("No easy message");
+            if (solutionResponse.lives() == 0) {
                 break;
             }
 
+            if (solutionResponse.lives() == 1) {
+                var items = dragonsOfMugloarApi.listItemsAvailableInShop(gameId);
+                var affordableItems = items.stream().filter(t -> t.cost() < solutionResponse.gold()).toList();
+                var availableHpPotions = items.stream().filter(t -> t.id().equals(HEALTH_POT_ID) && t.cost() < solutionResponse.gold()).toList();
+                if (availableHpPotions.size() > 0) {
+                    dragonsOfMugloarApi.purchaseShopItem(gameId, availableHpPotions.stream().findAny().orElseThrow().id());
+                } else if (affordableItems.size() > 0) {
+                    dragonsOfMugloarApi.purchaseShopItem(gameId, affordableItems.stream().findAny().orElseThrow().id());
+                }
+            }
         }
-        System.out.println("Current score: " + currentScore);
+        System.out.println("Final score: " + currentScore);
+
+        return currentScore;
+    }
+
+    private String getMessage(String gameId) {
+        var messages = dragonsOfMugloarApi.getMessages(gameId);
+        var messagesWithGroup = messages.stream()
+                .map(Message::mapTo)
+                .collect(Collectors.toList());
+
+        Comparator<MessageWithCategory> messageComparator = Comparator.comparing(MessageWithCategory::difficulty)
+                .thenComparing(Comparator.comparingInt(MessageWithCategory::reward)
+                        .reversed());
+
+        messagesWithGroup.sort(messageComparator);
+
+        return messagesWithGroup.stream()
+                .findFirst()
+                .orElseThrow()
+                .adId();
     }
 
 }

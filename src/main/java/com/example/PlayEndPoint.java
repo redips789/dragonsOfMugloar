@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "${dragons-of-mugloar.endpoints.base}", produces = MediaType.APPLICATION_JSON_VALUE)
-public class PlayEndpoint {
+public class PlayEndPoint {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlayEndpoint.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlayEndPoint.class);
 
     private final GamePlayService gamePlayService;
 
-    public PlayEndpoint(GamePlayService gamePlayService) {
+    public PlayEndPoint(GamePlayService gamePlayService) {
         this.gamePlayService = gamePlayService;
     }
 
     @PostMapping
     @Operation(summary = "Hello World!")
-    public void playGame() {
+    public Integer playGame() {
         LOGGER.info("This works");
 
-        gamePlayService.play();
+        return gamePlayService.play();
     }
 }
