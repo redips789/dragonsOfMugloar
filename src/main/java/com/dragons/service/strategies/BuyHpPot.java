@@ -1,6 +1,7 @@
 package com.dragons.service.strategies;
 
 import com.dragons.client.DragonsOfMugloarApi;
+import com.dragons.model.GameState;
 import com.dragons.model.Item;
 import com.dragons.model.MessageWithCategory;
 import com.dragons.service.PreparationStrategy;
@@ -15,6 +16,8 @@ public class BuyHpPot implements PreparationStrategy {
 
     public static final String HEALTH_POT_ID = "hpot";
 
+    public final Integer priority = 0;
+
     private final DragonsOfMugloarApi dragonsOfMugloarApi;
 
     public BuyHpPot(DragonsOfMugloarApi dragonsOfMugloarApi) {
@@ -22,14 +25,14 @@ public class BuyHpPot implements PreparationStrategy {
     }
 
     @Override
-    public boolean valid(Integer lives, MessageWithCategory messageWithCategory, String gameId, List<Item> affordableItems) {
-        return lives == 1 &&
-                getHealthPotId(affordableItems).isPresent();
+    public boolean valid(GameState gameState, MessageWithCategory messageWithCategory) {
+        return gameState.getCurrentLives() == 1 &&
+                getHealthPotId(gameState.getAffordableItems()).isPresent();
     }
 
     @Override
-    public void apply(String gameId, List<Item> affordableItems) {
-        dragonsOfMugloarApi.purchaseShopItem(gameId, getHealthPotId(affordableItems).orElseThrow());
+    public void apply(GameState gameState) {
+        dragonsOfMugloarApi.purchaseShopItem(gameState.getGameId(), getHealthPotId(gameState.getAffordableItems()).orElseThrow());
     }
 
     private Optional<String> getHealthPotId(List<Item> itemList) {
@@ -38,5 +41,15 @@ public class BuyHpPot implements PreparationStrategy {
                 .sorted(Comparator.comparingInt(Item::cost))
                 .map(Item::id)
                 .findFirst();
+    }
+
+    @Override
+    public Integer getPriority() {
+        return priority;
+    }
+
+    @Override
+    public int compareTo(PreparationStrategy o) {
+        return priority - o.getPriority();
     }
 }

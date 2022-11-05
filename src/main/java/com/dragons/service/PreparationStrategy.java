@@ -1,13 +1,13 @@
 package com.dragons.service;
 
-import com.dragons.model.Item;
+import com.dragons.model.GameState;
 import com.dragons.model.MessageWithCategory;
 
-import java.util.List;
+public interface PreparationStrategy extends Comparable<PreparationStrategy> {
 
-public interface PreparationStrategy {
+    boolean valid(GameState gameState, MessageWithCategory messageWithCategory);
 
-    boolean valid(Integer lives, MessageWithCategory messageWithCategory, String gameId, List<Item> affordableItems);
+    void apply(GameState gameState);
 
-    void apply(String gameId, List<Item> affordableItems);
+    Integer getPriority();
 }

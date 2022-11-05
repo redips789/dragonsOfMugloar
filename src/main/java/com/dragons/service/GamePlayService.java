@@ -1,11 +1,13 @@
 package com.dragons.service;
 
 import com.dragons.client.DragonsOfMugloarApi;
+import com.dragons.model.GameState;
 import com.dragons.model.Item;
 import com.dragons.model.Message;
 import com.dragons.model.MessageWithCategory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,29 +24,28 @@ public class GamePlayService {
                            List<PreparationStrategy> preparationStrategies) {
         this.dragonsOfMugloarApi = dragonsOfMugloarApi;
         this.missionPreparatory = missionPreparatory;
-        this.preparationStrategies = preparationStrategies;
+        this.preparationStrategies = preparationStrategies.stream().sorted().collect(Collectors.toList());
     }
 
     public Integer play() {
-        var gameState = dragonsOfMugloarApi.startGame();
-        var gameId = gameState.gameId();
-        var currentScore = gameState.score();
-        var currentLives = gameState.lives();
-        var availableGold = gameState.gold();
+        var startGameResponse = dragonsOfMugloarApi.startGame();
+        var gameState = new GameState(startGameResponse.gameId(), startGameResponse.lives(), new ArrayList<>());
+        var currentScore = startGameResponse.score();
+        var availableGold = startGameResponse.gold();
 
-        while (gameState.lives() > 0) {
-            var messageWithCategory = getMessageWithCategory(gameId);
-            var affordableItems = getAffordableItems(gameId, availableGold);
-            missionPreparatory.prepare(currentLives, messageWithCategory, gameId, preparationStrategies, affordableItems);
-            var solutionResponse = dragonsOfMugloarApi.solveMessage(gameId, messageWithCategory.adId());
-            currentScore = solutionResponse.score();
-            currentLives = solutionResponse.lives();
-            availableGold = solutionResponse.gold();
+        while (gameState.getCurrentLives() > 0) {
+            var messageWithCategory = getMessageWithCategory(gameState.getGameId());
+            gameState.getAffordableItems().addAll(getAffordableItems(gameState.getGameId(), availableGold));
+            missionPreparatory.prepare(gameState, messageWithCategory, preparationStrategies);
+            var solveMessageResponse = dragonsOfMugloarApi.solveMessage(gameState.getGameId(), messageWithCategory.adId());
+            gameState.setCurrentLives(solveMessageResponse.lives());
+            currentScore = solveMessageResponse.score();
+            availableGold = solveMessageResponse.gold();
 
-            if (solutionResponse.lives() == 0) {
+            if (gameState.getCurrentLives() == 0) {
                 break;
             }
-
+            gameState.getAffordableItems().clear();
         }
 
         return currentScore;
