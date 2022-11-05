@@ -1,4 +1,4 @@
-package com.example;
+package com.dragons.shared;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.util.LinkedMultiValueMap;

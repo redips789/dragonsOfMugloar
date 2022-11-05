@@ -1,4 +1,4 @@
-package com.example.rest;
+package com.dragons.model;
 
 public record Message(String adId, String message, Integer reward, Integer expiresIn, String probability) {
 

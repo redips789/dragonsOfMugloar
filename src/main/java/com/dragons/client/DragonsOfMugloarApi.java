@@ -1,7 +1,7 @@
-package com.example.client;
+package com.dragons.client;
 
-import com.example.HttpClientWrapper;
-import com.example.rest.*;
+import com.dragons.model.*;
+import com.dragons.shared.HttpClientWrapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

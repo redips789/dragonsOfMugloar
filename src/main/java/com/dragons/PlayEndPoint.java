@@ -1,6 +1,7 @@
-package com.example;
+package com.dragons;
 
 
+import com.dragons.service.GamePlayService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,9 @@ public class PlayEndPoint {
     }
 
     @PostMapping
-    @Operation(summary = "Hello World!")
+    @Operation(summary = "Play game!")
     public Integer playGame() {
-        LOGGER.info("This works");
+        LOGGER.info("Game started");
 
         return gamePlayService.play();
     }

@@ -1,7 +1,7 @@
-package com.example.exception;
+package com.dragons.exception;
 
-import com.example.JsonFormatPattern;
-import com.example.TimeMachine;
+import com.dragons.shared.JsonFormatPattern;
+import com.dragons.shared.TimeMachine;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;

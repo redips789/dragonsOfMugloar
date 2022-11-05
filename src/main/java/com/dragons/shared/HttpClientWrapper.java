@@ -1,9 +1,9 @@
-package com.example;
+package com.dragons.shared;
 
-import com.example.exception.ApiException;
-import com.example.exception.ApiExceptionDetails;
-import com.example.exception.ApiExceptionResponse;
-import com.example.exception.SpringDefaultExceptionResponse;
+import com.dragons.exception.ApiException;
+import com.dragons.exception.ApiExceptionDetails;
+import com.dragons.exception.ApiExceptionResponse;
+import com.dragons.exception.SpringDefaultExceptionResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

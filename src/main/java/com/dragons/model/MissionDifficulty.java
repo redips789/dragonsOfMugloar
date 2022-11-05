@@ -1,4 +1,4 @@
-package com.example.rest;
+package com.dragons.model;
 
 import java.util.Arrays;
 

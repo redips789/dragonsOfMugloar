@@ -1,6 +1,6 @@
-package com.example.exception;
+package com.dragons.exception;
 
-import com.example.TimeMachine;
+import com.dragons.shared.TimeMachine;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;

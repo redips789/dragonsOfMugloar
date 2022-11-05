@@ -1,4 +1,4 @@
-package com.example;
+package com.dragons.shared;
 
 public class JsonFormatPattern {
 
