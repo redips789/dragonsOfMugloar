@@ -6,12 +6,15 @@ public class GameState {
 
     private final String gameId;
     private Integer currentLives;
-    private final List<Item> affordableItems;
 
-    public GameState(String gameId, Integer currentLives, List<Item> affordableItems) {
+    private Integer availableGold;
+    private final List<Item> items;
+
+    public GameState(String gameId, Integer availableGold, Integer currentLives, List<Item> items) {
         this.gameId = gameId;
+        this.availableGold = availableGold;
         this.currentLives = currentLives;
-        this.affordableItems = affordableItems;
+        this.items = items;
     }
 
     public String getGameId() {
@@ -22,11 +25,19 @@ public class GameState {
         return currentLives;
     }
 
-    public List<Item> getAffordableItems() {
-        return affordableItems;
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public Integer getAvailableGold() {
+        return availableGold;
     }
 
     public void setCurrentLives(Integer currentLives) {
         this.currentLives = currentLives;
+    }
+
+    public void setAvailableGold(Integer availableGold) {
+        this.availableGold = availableGold;
     }
 }

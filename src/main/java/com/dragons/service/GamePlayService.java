@@ -29,23 +29,22 @@ public class GamePlayService {
 
     public Integer play() {
         var startGameResponse = dragonsOfMugloarApi.startGame();
-        var gameState = new GameState(startGameResponse.gameId(), startGameResponse.lives(), new ArrayList<>());
+        var gameState = new GameState(startGameResponse.gameId(), startGameResponse.gold(), startGameResponse.lives(), new ArrayList<>());
         var currentScore = startGameResponse.score();
-        var availableGold = startGameResponse.gold();
 
         while (gameState.getCurrentLives() > 0) {
             var messageWithCategory = getMessageWithCategory(gameState.getGameId());
-            gameState.getAffordableItems().addAll(getAffordableItems(gameState.getGameId(), availableGold));
+            gameState.getItems().addAll(dragonsOfMugloarApi.listItemsAvailableInShop(gameState.getGameId()));
             missionPreparatory.prepare(gameState, messageWithCategory, preparationStrategies);
             var solveMessageResponse = dragonsOfMugloarApi.solveMessage(gameState.getGameId(), messageWithCategory.adId());
             gameState.setCurrentLives(solveMessageResponse.lives());
+            gameState.setAvailableGold(solveMessageResponse.gold());
             currentScore = solveMessageResponse.score();
-            availableGold = solveMessageResponse.gold();
 
             if (gameState.getCurrentLives() == 0) {
                 break;
             }
-            gameState.getAffordableItems().clear();
+            gameState.getItems().clear();
         }
 
         return currentScore;

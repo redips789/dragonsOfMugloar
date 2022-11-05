@@ -5,6 +5,7 @@ import com.dragons.model.GameState;
 import com.dragons.model.Item;
 import com.dragons.model.MessageWithCategory;
 import com.dragons.model.MissionDifficulty;
+import com.dragons.service.GamePlayHelper;
 import com.dragons.service.PreparationStrategy;
 import org.springframework.stereotype.Component;
 
@@ -24,14 +25,25 @@ public class BuyOtherItem implements PreparationStrategy {
     @Override
     public boolean valid(GameState gameState, MessageWithCategory messageWithCategory) {
         return (gameState.getCurrentLives() == 1 || MissionDifficulty.HARD == messageWithCategory.difficulty())
-                && gameState.getAffordableItems().size() > 0;
+                && gameState.getItems().size() > 0;
     }
 
     @Override
     public void apply(GameState gameState) {
-        var cheapestItem = gameState.getAffordableItems().stream().min(Comparator.comparingInt(Item::cost)).orElseThrow();
+        var affordableItems = GamePlayHelper.getAffordableItems(gameState.getItems(), gameState.getAvailableGold());
 
-        dragonsOfMugloarApi.purchaseShopItem(gameState.getGameId(), cheapestItem.id());
+        if (affordableItems.isEmpty()) {
+            return;
+        }
+
+        var cheapestItem = affordableItems.stream()
+                .min(Comparator.comparingInt(Item::cost))
+                .orElseThrow();
+
+        var purchaseItemResponse = dragonsOfMugloarApi.purchaseShopItem(gameState.getGameId(), cheapestItem.id());
+        gameState.setCurrentLives(purchaseItemResponse.lives());
+        gameState.setAvailableGold(purchaseItemResponse.gold());
+        gameState.getItems().remove(cheapestItem);
     }
 
     @Override

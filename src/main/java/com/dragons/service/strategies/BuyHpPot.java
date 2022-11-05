@@ -4,6 +4,7 @@ import com.dragons.client.DragonsOfMugloarApi;
 import com.dragons.model.GameState;
 import com.dragons.model.Item;
 import com.dragons.model.MessageWithCategory;
+import com.dragons.service.GamePlayHelper;
 import com.dragons.service.PreparationStrategy;
 import org.springframework.stereotype.Component;
 
@@ -27,19 +28,28 @@ public class BuyHpPot implements PreparationStrategy {
     @Override
     public boolean valid(GameState gameState, MessageWithCategory messageWithCategory) {
         return gameState.getCurrentLives() == 1 &&
-                getHealthPotId(gameState.getAffordableItems()).isPresent();
+                getHealthPot(gameState.getItems()).isPresent();
     }
 
     @Override
     public void apply(GameState gameState) {
-        dragonsOfMugloarApi.purchaseShopItem(gameState.getGameId(), getHealthPotId(gameState.getAffordableItems()).orElseThrow());
+        var affordableItems = GamePlayHelper.getAffordableItems(gameState.getItems(), gameState.getAvailableGold());
+
+        if (affordableItems.isEmpty()) {
+            return;
+        }
+
+        var healthPot = getHealthPot(affordableItems).orElseThrow();
+        var purchaseItemResponse = dragonsOfMugloarApi.purchaseShopItem(gameState.getGameId(), healthPot.id());
+        gameState.setCurrentLives(purchaseItemResponse.lives());
+        gameState.setAvailableGold(purchaseItemResponse.gold());
+        gameState.getItems().remove(healthPot);
     }
 
-    private Optional<String> getHealthPotId(List<Item> itemList) {
+    private Optional<Item> getHealthPot(List<Item> itemList) {
         return itemList.stream()
                 .filter(item -> item.id().equals(HEALTH_POT_ID))
                 .sorted(Comparator.comparingInt(Item::cost))
-                .map(Item::id)
                 .findFirst();
     }
 
