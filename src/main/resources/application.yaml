@@ -1,0 +1,26 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: dragons-of-mugloar
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: true
+  main:
+    banner-mode: "off"
+
+dragons-of-mugloar:
+  version_major: v1
+  endpoints:
+    base: /api/${dragons-of-mugloar.version_major}
+
+dragons_of_mugloar_app:
+  host: https://dragonsofmugloar.com/api/v2
+
+httpclient:
+  timeout: 5000
