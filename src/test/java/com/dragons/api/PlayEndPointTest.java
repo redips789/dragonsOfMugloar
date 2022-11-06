@@ -23,7 +23,7 @@ public class PlayEndPointTest {
         var response = this.restTemplate.postForEntity(this.URI, null, Integer.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(32);
+        assertThat(response.getBody()).isEqualTo(0);
     }
 
     //TODO

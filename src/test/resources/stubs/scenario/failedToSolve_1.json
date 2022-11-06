@@ -1,0 +1,25 @@
+{
+  "priority": 1,
+  "scenarioName": "game play",
+  "requiredScenarioState": "messages listed",
+  "newScenarioState": "mission 1 failed",
+  "request": {
+    "method": "POST",
+    "urlPath": "/TESTID/solve/YbQYYtut"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "success": false,
+      "lives": 2,
+      "gold": 0,
+      "score": 0,
+      "highScore": 0,
+      "turn": 1,
+      "message": "You failed the mission!!"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

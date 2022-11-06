@@ -2,13 +2,8 @@ package com.dragons.service.strategies;
 
 import com.dragons.client.DragonsOfMugloarApi;
 import com.dragons.model.GameState;
-import com.dragons.model.Item;
-import com.dragons.model.MessageWithCategory;
-import com.dragons.model.PurchaseItemResponse;
 import com.dragons.service.PreparationStrategy;
 import org.springframework.stereotype.Component;
-
-import java.util.Comparator;
 
 @Component
 public class BuyExpensiveItem implements PreparationStrategy {
@@ -22,7 +17,7 @@ public class BuyExpensiveItem implements PreparationStrategy {
     }
 
     @Override
-    public boolean valid(GameState gameState, MessageWithCategory messageWithCategory) {
+    public boolean valid(GameState gameState) {
         var items = gameState.getItemsAvailableToBuy().stream()
                 .filter(item -> item.cost() >= 300)
                 .toList();
@@ -33,27 +28,14 @@ public class BuyExpensiveItem implements PreparationStrategy {
     @Override
     public void apply(GameState gameState) {
         while (true) {
-            var selectedItem = selectItem(gameState);
-            var purchaseItemResponse = dragonsOfMugloarApi.purchaseShopItem(gameState.getGameId(), selectedItem.id());
+            var selectedItem = StrategiesHelper.selectItem(gameState, 300);
+            var purchaseItemResponse = dragonsOfMugloarApi.purchaseItem(gameState.getGameId(), selectedItem.id());
 
             if (purchaseItemResponse.shoppingSuccess()) {
-                updateGameState(gameState, purchaseItemResponse, selectedItem);
+                StrategiesHelper.updateGameState(gameState, purchaseItemResponse, selectedItem);
                 break;
             }
         }
-    }
-
-    private Item selectItem(GameState gameState) {
-        return gameState.getItemsAvailableToBuy().stream()
-                .filter(item -> item.cost() == 300)
-                .min(Comparator.comparingInt(Item::cost)).orElseThrow();
-    }
-
-    private void updateGameState(GameState gameState, PurchaseItemResponse purchaseItemResponse, Item selectedItem) {
-        gameState.setCurrentLives(purchaseItemResponse.lives());
-        gameState.setAvailableGold(purchaseItemResponse.gold());
-        gameState.getItemsAvailableToBuy().remove(selectedItem);
-        gameState.getCurrentItems().add(selectedItem);
     }
 
     @Override

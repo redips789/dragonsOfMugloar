@@ -1,7 +1,6 @@
 package com.dragons.service;
 
 import com.dragons.model.GameState;
-import com.dragons.model.MessageWithCategory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,10 +8,9 @@ import java.util.List;
 @Component
 public class MissionPreparatory {
 
-    public void prepare(GameState gameState, MessageWithCategory messageWithCategory,
-                        List<PreparationStrategy> strategyList) {
+    public void prepare(GameState gameState, List<PreparationStrategy> strategyList) {
         strategyList.stream()
-                .filter(strategy -> strategy.valid(gameState, messageWithCategory))
+                .filter(strategy -> strategy.valid(gameState))
                 .forEach(strategy -> strategy.apply(gameState));
     }
 }

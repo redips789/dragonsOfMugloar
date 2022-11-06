@@ -20,22 +20,22 @@ public class DragonsOfMugloarApi {
     }
 
     public StartGameResponse startGame() {
-        return httpClient.post(null, StartGameResponse.class, dragonsUri, "game", "start");
+        return httpClient.post(StartGameResponse.class, dragonsUri, "game", "start");
     }
 
-    public List<Message> getMessages(String gameId) {
+    public List<Message> getAllMessages(String gameId) {
         return httpClient.getList(Message[].class, dragonsUri, gameId, "messages");
     }
 
     public SolveMessageResponse solveMessage(String gameId, String messageId) {
-        return httpClient.post(null, SolveMessageResponse.class, dragonsUri, gameId, "solve", messageId);
+        return httpClient.post(SolveMessageResponse.class, dragonsUri, gameId, "solve", messageId);
     }
 
-    public List<Item> listItemsAvailableInShop(String gameId) {
+    public List<Item> listAvailableItems(String gameId) {
         return httpClient.getList(Item[].class, dragonsUri, gameId, "shop");
     }
 
-    public PurchaseItemResponse purchaseShopItem(String gameId, String itemId) {
-        return httpClient.post(null, PurchaseItemResponse.class, dragonsUri, gameId, "shop", "buy", itemId);
+    public PurchaseItemResponse purchaseItem(String gameId, String itemId) {
+        return httpClient.post(PurchaseItemResponse.class, dragonsUri, gameId, "shop", "buy", itemId);
     }
 }

@@ -32,7 +32,7 @@ public class DragonsOfMugloarApiTest {
     void startGame() {
         var startGameResponse = dragonsOfMugloarApi.startGame();
 
-        assertThat(startGameResponse.gameId()).isEqualTo("Rx4DpGC4");
+        assertThat(startGameResponse.gameId()).isEqualTo("TESTID");
         assertThat(startGameResponse.gold()).isEqualTo(0);
         assertThat(startGameResponse.lives()).isEqualTo(3);
         assertThat(startGameResponse.score()).isEqualTo(0);
@@ -43,7 +43,7 @@ public class DragonsOfMugloarApiTest {
 
     @Test
     void listMessages() {
-        var messages = dragonsOfMugloarApi.getMessages("Rx4DpGC4");
+        var messages = dragonsOfMugloarApi.getAllMessages("Rx4DpGC4");
 
         assertThat(messages).hasSize(10);
         assertThat(messages).containsAll(FixtureFactory.getMessages());
@@ -62,7 +62,7 @@ public class DragonsOfMugloarApiTest {
 
     @Test
     void listItemsAvailableShop() {
-        var items = dragonsOfMugloarApi.listItemsAvailableInShop("Rx4DpGC4");
+        var items = dragonsOfMugloarApi.listAvailableItems("Rx4DpGC4");
 
         assertThat(items).hasSize(11);
         assertThat(items).containsAll(FixtureFactory.getItems());
@@ -70,7 +70,7 @@ public class DragonsOfMugloarApiTest {
 
     @Test
     void purchaseShopItem() {
-        var purchaseItemResponse = dragonsOfMugloarApi.purchaseShopItem("Rx4DpGC4", "gas");
+        var purchaseItemResponse = dragonsOfMugloarApi.purchaseItem("Rx4DpGC4", "gas");
 
         assertThat(purchaseItemResponse.shoppingSuccess()).isFalse();
         assertThat(purchaseItemResponse.gold()).isEqualTo(0);

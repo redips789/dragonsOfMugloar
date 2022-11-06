@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Service
 public class GamePlayService {
 
-
     private final DragonsOfMugloarApi dragonsOfMugloarApi;
     private final MissionPreparatory missionPreparatory;
     private final List<PreparationStrategy> preparationStrategies;
@@ -28,14 +27,15 @@ public class GamePlayService {
     public Integer play() {
         var startGameResponse = dragonsOfMugloarApi.startGame();
         var gameState = new GameState(startGameResponse.gameId(), startGameResponse.gold(), startGameResponse.lives(),
-                dragonsOfMugloarApi.listItemsAvailableInShop(startGameResponse.gameId()));
+                dragonsOfMugloarApi.listAvailableItems(startGameResponse.gameId()));
         var currentScore = startGameResponse.score();
 
         while (gameState.getCurrentLives() > 0) {
+            ;
+            missionPreparatory.prepare(gameState, preparationStrategies);
             var messageWithCategory = getMessageWithCategory(gameState.getGameId());
-            missionPreparatory.prepare(gameState, messageWithCategory, preparationStrategies);
-            messageWithCategory = getMessageWithCategory(gameState.getGameId()); //just in case old one expired during preparation
-            var solveMessageResponse = dragonsOfMugloarApi.solveMessage(gameState.getGameId(), messageWithCategory.adId());
+            var solveMessageResponse = dragonsOfMugloarApi.solveMessage(gameState.getGameId(),
+                    messageWithCategory.adId());
 
             gameState.setCurrentLives(solveMessageResponse.lives());
             gameState.setAvailableGold(solveMessageResponse.gold());
@@ -50,7 +50,7 @@ public class GamePlayService {
     }
 
     private MessageWithCategory getMessageWithCategory(String gameId) {
-        var messages = dragonsOfMugloarApi.getMessages(gameId);
+        var messages = dragonsOfMugloarApi.getAllMessages(gameId);
         var messagesWithGroup = messages.stream()
                 .map(Message::mapTo)
                 .collect(Collectors.toList());

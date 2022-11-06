@@ -3,7 +3,6 @@ package com.dragons.service.strategies;
 import com.dragons.client.DragonsOfMugloarApi;
 import com.dragons.model.GameState;
 import com.dragons.model.Item;
-import com.dragons.model.MessageWithCategory;
 import com.dragons.service.PreparationStrategy;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +24,7 @@ public class BuyHpPot implements PreparationStrategy {
     }
 
     @Override
-    public boolean valid(GameState gameState, MessageWithCategory messageWithCategory) {
+    public boolean valid(GameState gameState) {
         return gameState.getCurrentLives() == 1 && gameState.getAvailableGold() >= 50;
     }
 
@@ -33,7 +32,7 @@ public class BuyHpPot implements PreparationStrategy {
     public void apply(GameState gameState) {
         while (true) {
             var healthPot = getHealthPot(gameState.getItemsAvailableToBuy()).orElseThrow();
-            var purchaseItemResponse = dragonsOfMugloarApi.purchaseShopItem(gameState.getGameId(), healthPot.id());
+            var purchaseItemResponse = dragonsOfMugloarApi.purchaseItem(gameState.getGameId(), healthPot.id());
             if (purchaseItemResponse.shoppingSuccess()) {
                 gameState.setCurrentLives(purchaseItemResponse.lives());
                 gameState.setAvailableGold(purchaseItemResponse.gold());

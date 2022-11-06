@@ -64,11 +64,10 @@ public class HttpClientWrapper {
     /**
      * Makes a HTTP POST request to the given URI
      */
-    public <T> T post(Object requestBody, Class<T> responseClazz, String uri, Object... pathSegments) {
+    public <T> T post(Class<T> responseClazz, String uri, Object... pathSegments) {
         return this.exchange(new HttpRequestWrapper.HttpRequestBuilder()
                 .withMethod(HttpMethod.POST)
                 .withUri(uri, pathSegments)
-                .withRequestBody(requestBody)
                 .build(responseClazz));
     }
 
@@ -79,10 +78,7 @@ public class HttpClientWrapper {
     }
 
     private ResponseEntity<byte[]> execute(HttpRequestWrapper<?> requestWrapper) {
-        var publisher = requestWrapper.getRequestBody()
-                .map(this::convertToString)
-                .map(BodyPublishers::ofString)
-                .orElseGet(BodyPublishers::noBody);
+        var publisher = BodyPublishers.noBody();
         var request = HttpRequest
                 .newBuilder(requestWrapper.getUri())
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -130,6 +126,9 @@ public class HttpClientWrapper {
     }
 
     private void handleErrors(ResponseEntity<byte[]> response, URI uri) {
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return;
+        }
         throw ApiException.internalServerError("HTTP Client: Unexpected exception");
     }
 

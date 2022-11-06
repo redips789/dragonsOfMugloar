@@ -1,4 +1,8 @@
 {
+  "priority": 1,
+  "scenarioName": "game play",
+  "requiredScenarioState": "Started",
+  "newScenarioState": "game started",
   "request": {
     "method": "POST",
     "urlPath": "/game/start"
@@ -6,7 +10,7 @@
   "response": {
     "status": 200,
     "jsonBody": {
-      "gameId": "Rx4DpGC4",
+      "gameId": "TESTID",
       "lives": 3,
       "gold": 0,
       "level": 0,

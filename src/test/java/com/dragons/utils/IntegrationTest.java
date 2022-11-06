@@ -18,7 +18,8 @@ import java.lang.annotation.Target;
                 "dragons_of_mugloar_app.host=http://localhost:${wiremock.server.port}"
         })
 @AutoConfigureWireMock(port = 0, stubs = {
-        "file:src/test/resources/stubs/"
+        "file:src/test/resources/stubs/",
+        "file:src/test/resources/stubs/scenario/"
 })
 public @interface IntegrationTest {
 }

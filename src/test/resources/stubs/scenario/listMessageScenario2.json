@@ -1,0 +1,97 @@
+{
+  "scenarioName": "game play",
+  "requiredScenarioState": "mission 1 failed",
+  "newScenarioState": "messages listed 2",
+  "request": {
+    "method": "GET",
+    "urlPath": "/TESTID/messages"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": [
+      {
+        "adId": "YbQYYtut",
+        "message": "Help Asaf Ásmundsson to sell an unordinary clothes on the local market",
+        "reward": 21,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Piece of cake"
+      },
+      {
+        "adId": "A4eYlPOp",
+        "message": "Help Nasrin Baldwin to transport a magic chariot to village in Highheart",
+        "reward": 13,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Hmmm...."
+      },
+      {
+        "adId": "vctgTFTz",
+        "message": "Help Pravina Bissette to fix their sheep",
+        "reward": 5,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Piece of cake"
+      },
+      {
+        "adId": "PUVT64or",
+        "message": "Help Macy Plonta to clean their dog",
+        "reward": 7,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Sure thing"
+      },
+      {
+        "adId": "rzw7JkNs",
+        "message": "Create an advertisement campaign for Kenyon Pearson to promote their horse based business",
+        "reward": 30,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Hmmm...."
+      },
+      {
+        "adId": "AKw1OCph",
+        "message": "Help Isobel Sessions to clean their chariot",
+        "reward": 7,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Walk in the park"
+      },
+      {
+        "adId": "8AZ0x83P",
+        "message": "Help Kelila Richard to fix their sheep",
+        "reward": 6,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Sure thing"
+      },
+      {
+        "adId": "gzponC7R",
+        "message": "Help Rhian Savidge to write their biographical novel about their difficulties with a deranged cat",
+        "reward": 34,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Risky"
+      },
+      {
+        "adId": "B7J7NXFG",
+        "message": "Help Audie Normanson to write their biographical novel about their difficulties with a deranged house",
+        "reward": 45,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Risky"
+      },
+      {
+        "adId": "a5kTy5Oh",
+        "message": "Help Shri Edwardson to reach an agreement with Randy Clayton on the matters of disputed horse",
+        "reward": 16,
+        "expiresIn": 7,
+        "encrypted": null,
+        "probability": "Sure thing"
+      }
+    ],
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
