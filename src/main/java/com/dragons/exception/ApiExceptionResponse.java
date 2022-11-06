@@ -25,6 +25,14 @@ public class ApiExceptionResponse {
         this.exceptions = exceptions;
     }
 
+    public static ApiExceptionResponse of(int statusCode, LocalDateTime timestamp, String reason, List<ApiExceptionDetails> apiExceptionDetails) {
+        return new ApiExceptionResponse(statusCode, timestamp, reason, apiExceptionDetails);
+    }
+
+    public static ApiExceptionResponse ofApiException(ApiException apiException) {
+        return new ApiExceptionResponse(apiException.getStatusCode(), apiException.getTimestamp(), apiException.getReason(), apiException.getExceptions());
+    }
+
     public int getStatusCode() {
         return this.statusCode;
     }

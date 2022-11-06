@@ -1,9 +1,6 @@
 package com.dragons.shared;
 
 import com.dragons.exception.ApiException;
-import com.dragons.exception.ApiExceptionDetails;
-import com.dragons.exception.ApiExceptionResponse;
-import com.dragons.exception.SpringDefaultExceptionResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -24,7 +21,6 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -104,7 +100,7 @@ public class HttpClientWrapper {
             return new ResponseEntity<>(response.body(), new LinkedMultiValueMap<>(response.headers().map()), status);
         } catch (HttpTimeoutException e) {
             LOGGER.error("HTTP Client: Request time out", e);
-            throw ApiException.ofExceptions(HttpStatus.REQUEST_TIMEOUT, "HTTP Client: Request time out."); // Should it really rethrow timeout?
+            throw ApiException.ofExceptions(HttpStatus.REQUEST_TIMEOUT, "HTTP Client: Request time out.");
         } catch (InterruptedException e) {
             // https://www.yegor256.com/2015/10/20/interrupted-exception.html
             Thread.currentThread().interrupt();
@@ -134,39 +130,7 @@ public class HttpClientWrapper {
     }
 
     private void handleErrors(ResponseEntity<byte[]> response, URI uri) {
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return;
-        }
-        try {
-            var exceptionResponse = this.mapper.readValue(response.getBody(), ApiExceptionResponse.class);
-            if (exceptionResponse.getExceptions() == null
-                    && exceptionResponse.getReason() == null
-                    && exceptionResponse.getStatusCode() == 0
-                    && exceptionResponse.getTimestamp() == null) {
-                throw new IllegalStateException("Incorrect error model");
-            }
-            throw ApiException.ofExceptions(response.getStatusCode(), exceptionResponse.getReason(), exceptionResponse.getExceptions());
-        } catch (IOException e) {
-            LOGGER.warn("HTTP Client: Bad error response, will try to parse the error again", e);
-        } catch (IllegalStateException e) {
-            LOGGER.warn("Error not in standard expected form, try again");
-        }
-        // If it wasn't ApiExceptionResponse, let's try doing SpringDefaultExceptionResponse
-        try {
-            var springException = this.mapper.readValue(response.getBody(), SpringDefaultExceptionResponse.class);
-            if (springException.getStatus() == null) {
-                var responseBody = response.getBody() == null ? "" : new String(response.getBody(), StandardCharsets.UTF_8);
-                throw new IllegalStateException("Incorrect error model: " + responseBody);
-            }
-            LOGGER.error("Error {} when calling {}, with a self reported exception: '{}' and message '{}'",
-                    springException.getStatus(), uri, springException.getException().orElse(""), springException.getMessage().orElse(""));
-            List<ApiExceptionDetails> details = new ArrayList<>();
-            springException.getException().ifPresent(exceptionMessage -> details.add(new ApiExceptionDetails("", exceptionMessage, "")));
-            throw ApiException.ofExceptions(response.getStatusCode(), springException.getError() + springException.getMessage().map(message -> ": " + message).orElse(""), details);
-        } catch (IOException | IllegalStateException e) {
-            LOGGER.error("HTTP Client: Bad error response", e);
-            throw ApiException.internalServerError("HTTP Client: Bad response");
-        }
+        throw ApiException.internalServerError("HTTP Client: Unexpected exception");
     }
 
     private String convertToString(Object value) {

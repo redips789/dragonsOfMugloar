@@ -12,7 +12,9 @@ Things left to do:
 
 1. Add testing
 2. Handle exceptions. Scenarios there item is out of stock, server returns timeout ...
-3. Tweak algorithm
-4. Check naming
-5. Update swagger dependency once new version is released (current has security vulnerabilities)
+3. Handle item price changes
+4. Recover after failure
+5. Tweak algorithm
+6. Check naming
+7. Update swagger, spring-boot dependencies once new versions are released (security vulnerabilities)
 

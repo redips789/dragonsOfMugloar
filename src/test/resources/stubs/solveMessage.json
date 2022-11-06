@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/Rx4DpGC4/solve/YbQYYtut"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "success": true,
+      "lives": 3,
+      "gold": 21,
+      "score": 3,
+      "highScore": 0,
+      "turn": 2,
+      "message": "You successfully solved the mission!"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

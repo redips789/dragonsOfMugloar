@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/Rx4DpGC4/shop/buy/gas"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "shoppingSuccess": false,
+      "gold": 0,
+      "lives": 3,
+      "level": 0,
+      "turn": 1
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

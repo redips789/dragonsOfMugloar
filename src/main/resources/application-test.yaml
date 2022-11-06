@@ -1,0 +1,7 @@
+dragons_of_mugloar_app:
+  host: localhost:8082/api/v2
+
+logging:
+  level:
+    WireMock:
+      WARN
